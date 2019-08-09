@@ -92,10 +92,23 @@ RUN apt update -y && apt-get install -y --fix-missing\
  zlib1g-dev\
  libbz2-dev\
  libcurl4-openssl-dev\
- libssl-dev\
+ libssl-dev
 RUN /opt/conda/bin/pip install genomeview
 COPY ./__init__.py /opt/conda/lib/python3.7/site-packages/genomeview/__init__.py
 #
+#
+# Try getting IGV through Java hack
+RUN npm install npm@latest -g
+
+# Install nodejs kernel
+RUN npm config set user 0 \
+ $$ npm install zeromq \
+ && npm config set unsafe-perm true \
+ && npm install ijavascript -g
+
+RUN ijsinstall --hide-undefined --install=global
+#
+
 #
 # Configure shell
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh && echo "SHELL=/bin/bash" >> /etc/environment
