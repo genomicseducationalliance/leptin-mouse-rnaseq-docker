@@ -27,48 +27,48 @@ RUN apt update -y && apt upgrade -y && apt-get install -y --fix-missing\
  wget
 #
 #
-#Install iCommands
+# Install iCommands
 RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - \
     && echo "deb [arch=amd64] https://packages.irods.org/apt/ xenial main" > /etc/apt/sources.list.d/renci-irods.list \
     && apt-get update \
     && apt-get install -y irods-icommands \
     && apt-get clean \
-    && rm -rf /usr/lib/apt/lists/*h
+    && rm -rf /usr/lib/apt/lists/*
+   # && fix-permissions $CONDA_DIR
 #
 #
-#
-# Use python to install packages bash kernel
-RUN sudo apt-get install -y python3-pip
-RUN python3 -m pip install\
- bash_kernel
-RUN python3 -m bash_kernel.install
-#
+# Install Jupyter lab
+RUN pip install jupyterlab==1.0.9 \
+    && conda update -n base conda \
+    && conda install -c conda-forge nodejs \
+    && jupyter lab build
 #
 #
-# Add the GEA user
-RUN useradd -p $(openssl passwd -1 -salt xyz 'gea_user') -m -d /home/gea_user -s /bin/bash gea_user
-RUN usermod -a -G sudo,root gea_user
-RUN echo "gea_user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+# install the irods plugin for jupyter lab
+RUN pip install jupyterlab_irods \
+    && jupyter serverextension enable --py jupyterlab_irods \
+    && jupyter labextension install ijab
 #
 #
-#
-# Install jupyter lab and extra doodads
-RUN pip3 install jupyterlab==0.35.6
-#
-#
-# Install IGV Jupyter extension
-RUN pip install igv-jupyter
-RUN jupyter serverextension enable --py igv --sys-prefix
-RUN jupyter nbextension install --py igv --sys-prefix
-RUN jupyter nbextension enable --py igv --sys-prefix
+# install jupyterlab hub-extension, lab-manager, bokeh
+RUN jupyter lab --version \
+    && jupyter labextension install @jupyterlab/hub-extension \
+                                    @jupyter-widgets/jupyterlab-manager \
+                                    jupyterlab_bokeh
 #
 #
+# install jupyterlab git extension
+RUN jupyter labextension install @jupyterlab/git && \
+        pip install --upgrade jupyterlab-git && \
+        jupyter serverextension enable --py jupyterlab_git
 #
-# Install the irods plugin for jupyter lab
-#RUN pip3 install jupyterlab_irods==2.0.1 \
-#     && jupyter-serverextension enable --py jupyterlab_irods \
-#     && jupyter-labextension install ijab@2.0.1 \
-#     && jupyter-labextension enable jupyterlab_html
+#
+# install jupyterlab github extension
+RUN jupyter labextension install @jupyterlab/github
+#
+#
+# add Bash kernel
+RUN pip install bash_kernel && python3 -m bash_kernel.install
 #
 #
 # Configure conda
@@ -97,9 +97,6 @@ RUN /opt/conda/bin/pip install genomeview
 COPY ./__init__.py /opt/conda/lib/python3.7/site-packages/genomeview/__init__.py
 #
 #
-# Try getting IGV through Java hack
-RUN npm install npm@latest -g
-
 # Install nodejs kernel
 RUN npm config set user 0 \
  $$ npm install zeromq \
@@ -108,19 +105,24 @@ RUN npm config set user 0 \
 
 RUN ijsinstall --hide-undefined --install=global
 #
-
 #
 # Configure shell
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh && echo "SHELL=/bin/bash" >> /etc/environment
 #
 #
+# Add the GEA user
+RUN useradd -p $(openssl passwd -1 -salt xyz 'gea_user') -m -d /home/gea_user -s /bin/bash gea_user
+RUN usermod -a -G sudo,root gea_user
+RUN echo "gea_user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+#
+#
 # Switch to GEA user
 COPY ./jupyter_notebook_config.json /opt/conda/etc/jupyter/jupyter_notebook_config.json
 COPY ./jupyter_notebook_config.py /home/gea_user/.jupyter/jupyter_notebook_config.py
-COPY ./.bashrc /home/gea_user/.bashrc
+#COPY ./.bashrc /home/gea_user/.bashrc
 RUN chown -R gea_user:gea_user /home/gea_user/.jupyter
 RUN chmod -R 777 /home/jovyan
-RUN chown gea_user:gea_user /home/gea_user/.bashrc
+#RUN chown gea_user:gea_user /home/gea_user/.bashrc
 USER gea_user
 #
 #
