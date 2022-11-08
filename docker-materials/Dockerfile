@@ -1,5 +1,5 @@
 
-FROM jupyter/scipy-notebook
+FROM jupyter/scipy-notebook:576f26fdf931
 # Maintained by
 LABEL maintainer="Genomics Education Alliance"
 LABEL maintainer_email="genomicseducationalliance@gmail.com"
@@ -28,6 +28,7 @@ RUN apt update -y && apt upgrade -y && apt-get install -y --fix-missing\
 #
 #
 # Install iCommands
+RUN apt-get update -y && apt-get install -y libssl1.0.0
 RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - \
     && echo "deb [arch=amd64] https://packages.irods.org/apt/ xenial main" > /etc/apt/sources.list.d/renci-irods.list \
     && apt-get update \
@@ -38,7 +39,7 @@ RUN wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - 
 #
 #
 # Install Jupyter lab
-RUN pip install jupyterlab==1.0.9 \
+RUN pip install jupyterlab \
     && conda update -n base conda \
     && conda install -c conda-forge nodejs \
     && jupyter lab build
@@ -46,25 +47,8 @@ RUN pip install jupyterlab==1.0.9 \
 #
 # install the irods plugin for jupyter lab
 RUN pip install jupyterlab_irods \
-    && jupyter serverextension enable --py jupyterlab_irods \
-    && jupyter labextension install ijab
+    && jupyter serverextension enable --py jupyterlab_irods
 #
-#
-# install jupyterlab hub-extension, lab-manager, bokeh
-RUN jupyter lab --version \
-    && jupyter labextension install @jupyterlab/hub-extension \
-                                    @jupyter-widgets/jupyterlab-manager \
-                                    jupyterlab_bokeh
-#
-#
-# install jupyterlab git extension
-RUN jupyter labextension install @jupyterlab/git && \
-        pip install --upgrade jupyterlab-git && \
-        jupyter serverextension enable --py jupyterlab_git
-#
-#
-# install jupyterlab github extension
-RUN jupyter labextension install @jupyterlab/github
 #
 #
 # add Bash kernel
@@ -79,7 +63,7 @@ RUN /opt/conda/bin/conda config --add channels conda-forge
 #
 # Install bioconda packages
 RUN /opt/conda/bin/conda install -y -q fastqc=0.11.7=5
-RUN /opt/conda/bin/conda install -y -q trimmomatic=0.38=0
+RUN /opt/conda/bin/conda install -y -q trimmomatic=0.38
 RUN /opt/conda/bin/conda install -y -q sra-tools=2.9.6=hf484d3e_0
 RUN /opt/conda/bin/conda install -y -q parallel-fastq-dump=0.6.5=py_0
 RUN /opt/conda/bin/conda install -y -q kallisto=0.46.0=hb6a4e58_0
