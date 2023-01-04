@@ -26,3 +26,5 @@ Datasets, worked-examples, and notebooks available on CyVerse:
 You can launch a Jupyter lab session pre-loaded with data and notebooks on CyVerse:
 
 <a href="https://de.cyverse.org/de/?type=quick-launch&quick-launch-id=5427183c-19a5-4105-8ce3-ebbf5313ac9d&app-id=f109453a-21be-11ea-b74e-008cfa5ae621" target="_blank"><img src="https://de.cyverse.org/Powered-By-CyVerse-blue.svg"></a>
+
+This material is based upon work supported by the National Science Foundation under Grant No. #1827130. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation."
