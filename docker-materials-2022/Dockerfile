@@ -54,9 +54,9 @@ RUN /opt/miniconda3/bin/conda config --add channels conda-forge
 # Install bioconda packages
 RUN /opt/miniconda3/bin/conda install -y -q fastqc=0.11.7=5
 RUN /opt/miniconda3/bin/conda install -y -q trimmomatic=0.39
-RUN /opt/miniconda3/bin/conda install -y -q sra-tools
+RUN /opt/miniconda3/bin/conda install -y -q sra-tools=3.0.0
 RUN /opt/miniconda3/bin/conda install -y -q parallel-fastq-dump
-RUN /opt/miniconda3/bin/conda install -c "bioconda/label/cf201901" kallisto
+RUN /opt/miniconda3/bin/conda install -y -q kallisto=0.48.0
 RUN /opt/miniconda3/bin/conda install -y -q -c bioconda fastp
 #
 #
@@ -136,6 +136,12 @@ COPY ./jupyter_notebook_config.py /home/gea_user/.jupyter/jupyter_notebook_confi
 RUN chown -R gea_user:gea_user /home/gea_user/.jupyter
 RUN chmod -R 777 /home/gea_user
 RUN chown gea_user:gea_user /home/gea_user/.bashrc
+#
+#
+#
+# Fix a font issue that messes with Java/FastQC
+RUN sudo apt-get install -y ttf-dejavu
+#
 #
 # Switch to gea_user user
 USER gea_user
