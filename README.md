@@ -1,5 +1,5 @@
 # leptin-mouse-rnaseq
-Docker files and lesson materials for GEA RNA-Seq lesson
+Docker files and lesson materials for GEA RNA-Seq lesson (https://github.com/genomics-education-alliance/leptin-rna-seq-lesson). This container provides a Jupyter Lab interface and the software tools for doing the demonstration RNA-Seq analysis. 
 
 
 ## To run image locally
