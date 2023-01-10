@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 # This script is needed to get the permissions correct when copying files from a file system that is mounted in
 # read-only mode by the iRODS CSI Driver. Simply doing a resursive copy causes the directory permissions to become
@@ -27,4 +27,4 @@ find work -type f -exec chmod 0644 {} +
 
 
 
-exec jupyter-lab --no-browser --ip=0.0.0.0 --LabApp.token="" --LabApp.password="" --notebook-dir='/home/gea_user' --Session.username='gea_user'
+exec jupyter-lab --no-browser --ip=0.0.0.0 --LabApp.token="" --LabApp.password="" --notebook-dir='/home/gea_user' --Session.username='gea_user' --NotebookApp.allow_origin='*'
